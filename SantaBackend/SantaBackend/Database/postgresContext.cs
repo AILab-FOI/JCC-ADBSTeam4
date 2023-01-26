@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace SantaBackEnd
 {
@@ -49,10 +46,6 @@ namespace SantaBackEnd
                 entity.HasIndex(e => e.Userid, "IX_Relationship91");
 
                 entity.Property(e => e.Elfid).HasColumnName("elfid");
-
-                entity.Property(e => e.Elfname)
-                    .HasMaxLength(30)
-                    .HasColumnName("elfname");
 
                 entity.Property(e => e.Roleid).HasColumnName("roleid");
 
@@ -208,6 +201,10 @@ namespace SantaBackEnd
                 entity.Property(e => e.Lastname)
                     .HasMaxLength(20)
                     .HasColumnName("lastname");
+
+                entity.Property(e => e.username)
+                    .HasMaxLength(35)
+                    .HasColumnName("username");
 
                 entity.Property(e => e.Password)
                     .HasMaxLength(20)

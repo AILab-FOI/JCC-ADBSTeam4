@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SantaBackEnd
+﻿namespace SantaBackEnd
 {
     public partial class Elf
     {
@@ -12,7 +9,6 @@ namespace SantaBackEnd
         }
 
         public int Elfid { get; set; }
-        public string Elfname { get; set; } = null!;
         public int? Workshopid { get; set; }
         public int? Roleid { get; set; }
         public int Userid { get; set; }

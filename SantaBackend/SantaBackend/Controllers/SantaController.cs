@@ -2,6 +2,7 @@
 using Npgsql;
 using SantaBackend.DTO;
 using SantaBackEnd;
+using SantaBackEnd.Database;
 using System.ComponentModel.DataAnnotations;
 
 namespace SantaBackend.Controllers
@@ -35,6 +36,37 @@ namespace SantaBackend.Controllers
 
 
             }
+            return Ok();
+        }
+
+        [HttpGet("listElvesWorkshop")]
+        public ActionResult listElvesWorkshop(int workshopID)
+        {
+            var elves = (from e in _context.Elves
+                         where e.Workshopid == workshopID
+                         select e).ToList();
+            return Ok(elves);
+        }
+
+        [HttpPost("addElvesWorkshop")]
+        public ActionResult addElvesWorkshop(int workshopID, int numOfElves)
+        {
+            var elves = (from e in _context.Elves
+                         where e.Workshopid == null
+                         select e).ToList();
+            for (int i = 0; i < numOfElves; i++)
+            {
+                elves[i].Workshopid = workshopID;
+            }
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        [HttpPost("generateElfs")]
+        public ActionResult generateElfs(int minindex, int maxIndex)
+        {
+            var generator = new DataGenerator();
+            generator.generataElves(minindex, maxIndex);
             return Ok();
         }
 
@@ -75,18 +107,36 @@ namespace SantaBackend.Controllers
             return BadRequest();
         }
 
-        [HttpPost("LoginSanta")]
-        public ActionResult LoginSanta([Required] int santaID, [Required] string password)
+        [HttpGet("LoginElf")]
+        public ActionResult LoginElf([Required] string username, [Required] string password)
         {
-            Santaclau? foundSanta = _context.Santaclaus.FirstOrDefault(s => s.Santaclausid == santaID);
-            if (foundSanta != null)
+            User? user = _context.Users.FirstOrDefault(s => s.username == username);
+            if (user != null)
             {
-                User? user = _context.Users.FirstOrDefault(s => s.Userid == foundSanta.Userid);
-                if (user != null)
+                Elf? foundElf = _context.Elves.FirstOrDefault(s => s.Elfid == user.Userid);
+                if (foundElf != null)
                 {
                     if (user.Password == password)
                     {
-                        return Ok();
+                        return Ok(user.Userid);
+                    }
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpGet("LoginSanta")]
+        public ActionResult LoginSanta([Required] string username, [Required] string password)
+        {
+            User? user = _context.Users.FirstOrDefault(s => s.username == username);
+            if (user != null)
+            {
+                Santaclau? foundSanta = _context.Santaclaus.FirstOrDefault(s => s.Santaclausid == user.Userid);
+                if (foundSanta != null)
+                {
+                    if (user.Password == password)
+                    {
+                        return Ok(foundSanta);
                     }
                 }
             }
@@ -106,7 +156,8 @@ namespace SantaBackend.Controllers
                 Dateofregistration = new DateOnly()
             };
 
-            newUser = _context.Users.Add(newUser).Entity;
+            _context.Users.Add(newUser);
+            _context.SaveChanges();
             Santaclau newSanta = new Santaclau()
             {
                 Userid = newUser.Userid,
@@ -158,9 +209,11 @@ namespace SantaBackend.Controllers
                     var datetimeEnd = startDate.ToDateTime(shiftType.Endtime);
                     var freeElfs = (from e in _context.Elves
                                     join ub in _context.Unavailableblocks on e.Elfid equals ub.Elfid
+                                    join sb in _context.Shiftblocks on e.Elfid equals sb.Elfid
                                     where (ub.Starttime.CompareTo(datetimeStart) > 0 && ub.Endtime.CompareTo(datetimeEnd) > 0 &&
                                     ub.Starttime.CompareTo(datetimeStart) < 0 && ub.Endtime.CompareTo(datetimeEnd) < 0 &&
-                                    ub.Starttime.CompareTo(datetimeStart) != 0 && ub.Endtime.CompareTo(datetimeEnd) != 0)
+                                    ub.Starttime.CompareTo(datetimeStart) != 0 && ub.Endtime.CompareTo(datetimeEnd) != 0 &&
+                                    !sb.Date.Equals(startDate))
                                     select e).ToList();
                     for (int i = 0; i < numberOfElfs; i++)
                     {
@@ -174,15 +227,134 @@ namespace SantaBackend.Controllers
                     }
                     startDate.AddDays(1);
                 }
-
             }
-
-
-
-
-
-
             return Ok();
+        }
+
+        [HttpPost("AddShift")]
+        public ActionResult AddShift(int elfID, DateOnly date, int shiftTypeID)
+        {
+            Elf? Elf = _context.Elves.FirstOrDefault(e => e.Elfid == elfID);
+            if (Elf != null)
+            {
+                bool unavailable = _context.Shiftblocks.Select(s => s.Date == date).FirstOrDefault();
+                if (unavailable)
+                {
+                    TimeOnly shiftStart = _context.Shifttypes.FirstOrDefault(s => s.Shifttypeid == shiftTypeID).Starttime;
+                    TimeOnly shiftEnd = _context.Shifttypes.FirstOrDefault(s => s.Shifttypeid == shiftTypeID).Endtime;
+                    DateTime start = date.ToDateTime(shiftStart);
+                    DateTime end = date.ToDateTime(shiftEnd);
+                    var blocked = (from u in _context.Unavailableblocks
+                                   where (u.Elfid == elfID && date == DateOnly.FromDateTime(u.Starttime) &&
+                                   u.Starttime.CompareTo(start) > 0 && u.Endtime.CompareTo(end) > 0 &&
+                                    u.Starttime.CompareTo(start) < 0 && u.Endtime.CompareTo(end) < 0 &&
+                                    u.Starttime.CompareTo(start) != 0 && u.Endtime.CompareTo(end) != 0)
+                                   select u);
+                    if (blocked != null)
+                    {
+                        Shiftblock newShift = new Shiftblock()
+                        {
+                            Elfid = elfID,
+                            Date = date,
+                            Shifttypeid = shiftTypeID,
+                        };
+                        _context.Shiftblocks.Add(newShift);
+                        _context.SaveChanges();
+                        return Ok(newShift);
+                    }
+
+                }
+            }
+            return BadRequest();
+        }
+
+        [HttpPost("RemoveShift")]
+        public ActionResult RemoveShift(int shiftID)
+        {
+            Shiftblock? block = _context.Shiftblocks.FirstOrDefault(s => s.Shiftid == shiftID);
+            if (block == null)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                _context.Shiftblocks.Remove(block);
+                _context.SaveChanges();
+                return Ok();
+            }
+        }
+
+        [HttpGet("addUnavailable")]
+        public ActionResult addUnavailable(int elfID, DateTime start, DateTime end)
+        {
+            Unavailableblock unavail = new Unavailableblock()
+            {
+                Elfid = elfID,
+                Starttime = start,
+                Endtime = end
+            };
+            _context.Unavailableblocks.Add(unavail);
+            _context.SaveChanges();
+            return Ok(unavail);
+        }
+
+        [HttpGet("getElfShifts")]
+        public ActionResult getElfShifts(int elfID, DateOnly start)
+        {
+            var startDate = start;
+            var weekDay = startDate.DayOfWeek;
+            if (weekDay != DayOfWeek.Monday)
+            {
+                startDate = startDate.AddDays(8 - ((int)weekDay));
+            }
+            var endDate = startDate.AddDays(7);
+
+            Elf? elf = _context.Elves.FirstOrDefault(e => e.Elfid == elfID);
+            if (elf != null)
+            {
+                var shifts = (from s in _context.Shiftblocks
+                              where (s.Elfid == elfID && s.Date >= startDate || s.Date <= endDate)
+                              select s);
+                var unavail = (
+                         from u in _context.Unavailableblocks
+                         where (u.Elfid == elfID && DateOnly.FromDateTime(u.Starttime) >= startDate && DateOnly.FromDateTime(u.Endtime) <= endDate)
+                         select u);
+                elf.Shiftblocks = (ICollection<Shiftblock>)shifts;
+                elf.Unavailableblocks = (ICollection<Unavailableblock>)unavail;
+                return Ok(elf);
+            }
+            return BadRequest();
+        }
+
+        [HttpGet("getWorkshopShifts")]
+        public ActionResult getWorkshopShifts(int workshopID, DateOnly start)
+        {
+            var startDate = start;
+            var weekDay = startDate.DayOfWeek;
+            if (weekDay != DayOfWeek.Monday)
+            {
+                startDate = startDate.AddDays(8 - ((int)weekDay));
+            }
+            var endDate = startDate.AddDays(7);
+
+            Workshop? workshop = _context.Workshops.FirstOrDefault(w => w.Workshopid == workshopID);
+            if (workshop != null)
+            {
+                var elfs = (from e in _context.Elves
+                            where e.Workshopid == workshopID
+                            select e);
+
+                foreach (var elf in elfs)
+                {
+                    var shifts = (from s in _context.Shiftblocks
+                                  where (s.Elfid == elf.Elfid && s.Date >= startDate || s.Date <= endDate)
+                                  select s);
+                    elf.Shiftblocks = (ICollection<Shiftblock>)shifts;
+                }
+                workshop.Elves = (ICollection<Elf>)elfs;
+                return Ok(workshop);
+            }
+            return BadRequest();
         }
 
         // GET: SantaController/Edit/5

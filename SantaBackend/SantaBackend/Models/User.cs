@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace SantaBackEnd
+﻿namespace SantaBackEnd
 {
     public partial class User
     {
@@ -14,6 +11,7 @@ namespace SantaBackEnd
         public int Userid { get; set; }
         public string Firstname { get; set; } = null!;
         public string Lastname { get; set; } = null!;
+        public string username { get; set; } = null!;
         public string Password { get; set; } = null!;
         public DateOnly Dateofbirth { get; set; }
         public DateOnly Dateofregistration { get; set; }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "9oL2j285ef3Xrdl6NYlJqfyLueA5ddLASR24MuHFUAaobmZGyDM9JBG/Y63vKF8Hg8pXl0jbzOzqFpxXWtIJOQ==",
+  "dgSpecHash": "k2fn1bfi5FBq1mQ8d/gXto2vv7qqAdc4UVcpm8Wqe9TVO3dN5vL8BQHAlJy+NdHfiCI/yDzz4fw1JcoLH0o1jQ==",
   "success": true,
-  "projectFilePath": "C:\\Users\\radof\\Source\\Repos\\SantaBackend\\SantaBackend\\SantaBackEnd.csproj",
+  "projectFilePath": "C:\\Users\\radof\\Source\\Repos\\SantaBackend\\JCC-ADBSTeam4\\SantaBackend\\SantaBackend\\SantaBackEnd.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\radof\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",
     "C:\\Users\\radof\\.nuget\\packages\\microsoft.entityframeworkcore\\6.0.7\\microsoft.entityframeworkcore.6.0.7.nupkg.sha512",

@@ -912,11 +912,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\radof\\Source\\Repos\\SantaBackend\\SantaBackend\\SantaBackEnd.csproj",
+      "projectUniqueName": "C:\\Users\\radof\\Source\\Repos\\SantaBackend\\JCC-ADBSTeam4\\SantaBackend\\SantaBackend\\SantaBackEnd.csproj",
       "projectName": "SantaBackEnd",
-      "projectPath": "C:\\Users\\radof\\Source\\Repos\\SantaBackend\\SantaBackend\\SantaBackEnd.csproj",
+      "projectPath": "C:\\Users\\radof\\Source\\Repos\\SantaBackend\\JCC-ADBSTeam4\\SantaBackend\\SantaBackend\\SantaBackEnd.csproj",
       "packagesPath": "C:\\Users\\radof\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\radof\\Source\\Repos\\SantaBackend\\SantaBackend\\obj\\",
+      "outputPath": "C:\\Users\\radof\\Source\\Repos\\SantaBackend\\JCC-ADBSTeam4\\SantaBackend\\SantaBackend\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
