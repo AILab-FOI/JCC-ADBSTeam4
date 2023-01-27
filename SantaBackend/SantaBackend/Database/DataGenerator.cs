@@ -42,8 +42,8 @@
                     registration = registration.AddDays(secondRand.Next(380));
                     password = new string(Enumerable.Repeat(chars, 8)
                         .Select(s => s[firstRand.Next(s.Length)]).ToArray());
-                    string insert = $"INSERT INTO public.users (userid, firstname, lastname, password, dateofbirth, dateofregistration) " +
-                        $"VALUES( {i}, \'{firstName}\', \'{lastName}\', \'{password}\', \'{birthday}\', \'{registration}\');\n";
+                    string insert = $"INSERT INTO public.users (userid, firstname, lastname, password, dateofbirth, dateofregistration, username) " +
+                        $"VALUES( {i}, \'{firstName}\', \'{lastName}\', \'{password}\', \'{birthday}\', \'{registration}\', \'{firstName}{i}\');\n";
                     File.AppendAllText(filename, insert);
                     insert = $"INSERT INTO public.elf(roleid, userid) VALUES(\'{firstRand.Next(1, 2)}\', \'{i}\');\n";
                     File.AppendAllText(filename, insert);

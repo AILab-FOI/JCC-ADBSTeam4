@@ -22,23 +22,6 @@ namespace SantaBackend.Controllers
             _context = context;
         }
 
-        // GET: SantaController
-        [HttpGet("test")]
-        public ActionResult Index()
-        {
-            string command = $"select* from public.SantaClaus";
-            using (NpgsqlCommand cmd = new NpgsqlCommand(command, connection))
-            {
-
-                NpgsqlDataReader reader = cmd.ExecuteReader();
-
-
-
-
-            }
-            return Ok();
-        }
-
         [HttpGet("listElvesWorkshop")]
         public ActionResult listElvesWorkshop(int workshopID)
         {
@@ -107,7 +90,7 @@ namespace SantaBackend.Controllers
             return BadRequest();
         }
 
-        [HttpGet("LoginElf")]
+        [HttpPost("LoginElf")]
         public ActionResult LoginElf([Required] string username, [Required] string password)
         {
             User? user = _context.Users.FirstOrDefault(s => s.username == username);
@@ -125,7 +108,7 @@ namespace SantaBackend.Controllers
             return BadRequest();
         }
 
-        [HttpGet("LoginSanta")]
+        [HttpPost("LoginSanta")]
         public ActionResult LoginSanta([Required] string username, [Required] string password)
         {
             User? user = _context.Users.FirstOrDefault(s => s.username == username);
@@ -356,20 +339,5 @@ namespace SantaBackend.Controllers
             }
             return BadRequest();
         }
-
-        // GET: SantaController/Edit/5
-        [HttpPost("Edit")]
-        public ActionResult Edit(int id)
-        {
-            return Ok();
-        }
-
-        // GET: SantaController/Delete/5
-        [HttpPost("Delete")]
-        public ActionResult Delete(int id)
-        {
-            return Ok();
-        }
-
     }
 }
