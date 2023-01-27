@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="EN">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+
+    <script>
+      window.isMbscDemo = true;
+    </script>
+
+    <title>Workshop Shift Schedule</title>
+
+    <!-- Mobiscroll JS and CSS Includes -->
+    <link href="css/style.min.css" rel="stylesheet" />
+    <script src="js/script.min.js"></script>
+    <style type="text/css">
+      body {
+        margin: 0;
+        padding: 0;
+      }
+
+      body,
+      html {
+        height: 100%;
+      }
+
+      /* The Modal (background) */
+
+      .add-elf-popup {
+        background: rgba(65, 96, 162, 0.72);
+        color: white;
+      }
+
+      .password,
+      .username {
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        font-family: "Open Sans", sans-serif;
+        transition: all 0.3s ease-in-out;
+      }
+
+      .password:hover,
+      .username:hover {
+        box-shadow: 0 0 20px rgb(253, 0, 0);
+      }
+
+      .login-btn {
+        padding: 10px 20px;
+        border-radius: 4px;
+        background-color: #c44343;
+        color: #fff;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background-color 0.3s ease-in-out;
+        cursor: pointer;
+        border: none;
+        text-transform: uppercase;
+      }
+
+      .add_btn {
+        margin-bottom: 20px;
+        margin-left: 20px;
+        padding: 10px 20px;
+        border-radius: 4px;
+        background-color: #c44343;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 500;
+        transition: background-color 0.3s ease-in-out;
+        cursor: pointer;
+        border: none;
+        text-transform: uppercase;
+        width: 100px;
+      }
+
+      /* Add hover effect */
+      button:hover {
+        background-color: #4f0909;
+      }
+
+      /* Add active effect */
+      button:active {
+        transform: scale(0.95);
+      }
+
+      /* Add focus effect */
+      button:focus {
+        box-shadow: 0 0 0 3px #4f0909;
+      }
+
+      .modal {
+        position: fixed;
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0, 0, 0);
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+
+      /* Modal Content */
+      .modal-content {
+        background-color: #489337;
+        margin: 15% auto;
+        padding: 30px;
+        border: 1px solid #888;
+        color: white;
+        width: 50%;
+      }
+
+      /* The Close Button */
+      .close {
+        color: #fafafa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+      }
+
+      .close:hover,
+      .close:focus {
+        color: #fd0000;
+        text-decoration: none;
+        cursor: pointer;
+      }
+
+      /* External library CSS */
+      .md-work-order-checkbox-label.mbsc-checkbox {
+        padding-top: 5px;
+        padding-bottom: 5px;
+      }
+
+      .md-work-order-date {
+        font-size: 14px;
+        border-bottom: 1px solid #ccc;
+        padding: 5px 10px;
+      }
+
+      .md-work-order-date-title {
+        font-size: 13px;
+        color: #959595;
+        padding: 5px 10px;
+        line-height: 18px;
+      }
+
+      .md-work-order-price-tag {
+        display: inline-block;
+        font-size: 11px;
+        line-height: 16px;
+        vertical-align: middle;
+        border: 1px solid #959595;
+        color: #959595;
+        border-radius: 5px;
+        margin: 0 10px;
+        padding: 0px 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Login Form -->
+    <div class="modal" id="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <form id="login-form">
+          <label for="username">Username:</label>
+          <input class="username" id="username" name="username" type="text" />
+          <br /><br />
+          <label for="password">Password:</label>
+          <input
+            class="password"
+            id="password"
+            name="password"
+            type="password"
+          />
+          <br /><br />
+          <button class="login-btn" id="login-btn" type="button">Login</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- New shift pop-up -->
+    <div class="demo-work-order-scheduling" mbsc-page>
+      <div style="height: 100%">
+        <div id="demo-work-order-scheduling"></div>
+        <div id="demo-work-order-popup">
+          <div class="mbsc-form-group">
+            <label>
+              Elf ID
+              <input id="work-order-role" mbsc-input />
+            </label>
+            <label>
+              First Name
+              <input id="work-order-firstname" mbsc-input />
+            </label>
+            <label>
+              Last Name
+              <input id="work-order-lastname" mbsc-input />
+            </label>
+            <label>
+              Workshop
+              <input id="work-order-workshop" mbsc-input />
+            </label>
+          </div>
+          <div class="mbsc-form-group">
+            <label>
+              Starts
+              <input id="work-order-start" mbsc-input />
+            </label>
+            <label>
+              Ends
+              <input id="work-order-end" mbsc-input />
+            </label>
+            <div id="work-order-date"></div>
+          </div>
+          <div class="mbsc-form-group" id="work-order-resources"></div>
+
+          <div class="mbsc-button-group">
+            <button
+              class="mbsc-button-block"
+              data-color="danger"
+              data-variant="outline"
+              id="work-order-delete"
+              mbsc-button
+            >
+              Delete shift
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!--  Add Elf Form  -->
+      <div class="add-elf-popup" id="add-elf-popup">
+        <label style="font-weight: bold">Create an Elf</label>
+        <div class="mbsc-form-group">
+          <label>
+            First Name
+            <input id="add-elf-firstname" mbsc-input />
+          </label>
+          <label>
+            Last Name
+            <input id="add-elf-lastname" mbsc-input />
+          </label>
+          <label>
+            Username
+            <input id="add-elf-username" mbsc-input /> </label
+          ><label>
+            Password
+            <input id="add-elf-password" mbsc-input type="password" />
+          </label>
+          <label>
+            Date of Birth
+            <input id="add-elf-dob" mbsc-input type="date" />
+          </label>
+          <label>
+            Workshop
+            <input id="add-elf-workshop" mbsc-input />
+          </label>
+        </div>
+      </div>
+      <button class="add_btn" id="add-btn" type="submit">Add</button>
+    </div>
+
+    <!-- Login Form Script -->
+    <script>
+      var modal = document.getElementById("modal");
+      var btn = document.getElementById("login-btn");
+      var span = document.getElementsByClassName("close")[0];
+
+      btn.onclick = function () {
+        modal.style.display = "none";
+      };
+      span.onclick = function () {
+        modal.style.display = "none";
+      };
+
+      mobiscroll.setOptions({
+        locale: mobiscroll.localeEn,
+        theme: "ios",
+        themeVariant: "light",
+      });
+
+      var calendar,
+        popup,
+        range,
+        oldEvent,
+        tempEvent = {},
+        deleteEvent,
+        restoreEvent,
+        titleInput = document.getElementById("work-order-firstname"),
+        locationInput = document.getElementById("work-order-lastname"),
+        billInput = document.getElementById("work-order-workshop"),
+        notesTextarea = document.getElementById("work-order-role"),
+        deleteButton = document.getElementById("work-order-delete"),
+        resourceCont = document.getElementById("work-order-resources");
+
+      var myResources = [
+        {
+          id: "mon",
+          name: "Monday",
+        },
+        {
+          id: "tue",
+          name: "Tuesday",
+        },
+        {
+          id: "wed",
+          name: "Wednesday",
+        },
+        {
+          id: "thu",
+          name: "Thursday",
+        },
+        {
+          id: "fri",
+          name: "Friday",
+        },
+        {
+          id: "sat",
+          name: "Saturday",
+        },
+      ];
+
+      function createAddPopup(elm) {
+        deleteButton.style.display = "none";
+
+        deleteEvent = true;
+        restoreEvent = false;
+
+        // set popup header text and buttons for adding
+        popup.setOptions({
+          headerText: "Add Shift",
+          buttons: [
+            "cancel",
+            {
+              text: "Add",
+              keyCode: "enter",
+              handler: function () {
+                calendar.updateEvent(tempEvent);
+                deleteEvent = false;
+
+                // navigate the calendar to the correct view
+                calendar.navigate(tempEvent.start);
+
+                popup.close();
+              },
+              cssClass: "mbsc-popup-button-primary",
+            },
+          ],
+        });
+
+        // fill popup with a new event data
+        mobiscroll.getInst(titleInput).value = tempEvent.title;
+        mobiscroll.getInst(locationInput).value = tempEvent.location;
+        mobiscroll.getInst(billInput).value = tempEvent.cost;
+        mobiscroll.getInst(notesTextarea).value = "";
+        range.setVal([tempEvent.start, tempEvent.end]);
+        setCheckboxes(tempEvent.resource);
+
+        // set anchor for the popup
+        popup.setOptions({ anchor: elm });
+        popup.open();
+      }
+
+      function createEditPopup(args) {
+        var ev = args.event;
+
+        // show delete button inside edit popup
+        deleteButton.style.display = "block";
+
+        deleteEvent = false;
+        restoreEvent = true;
+
+        // set popup header text and buttons for editing
+        popup.setOptions({
+          headerText: "Edit shift",
+          buttons: [
+            "cancel",
+            {
+              text: "Save",
+              keyCode: "enter",
+              handler: function () {
+                const date = range.getVal();
+                // update event with the new properties on save button click
+                calendar.updateEvent({
+                  id: ev.id,
+                  title: titleInput.value,
+                  location: locationInput.value,
+                  cost: billInput.value,
+                  notes: notesTextarea.value,
+                  start: date[0],
+                  end: date[1],
+                  color: ev.color,
+                  resource: ev.resource,
+                });
+
+                // navigate the calendar to the correct view
+                calendar.navigate(date[0]);
+
+                restoreEvent = false;
+                popup.close();
+              },
+              cssClass: "mbsc-popup-button-primary",
+            },
+          ],
+        });
+
+        // fill popup with the selected event data
+        mobiscroll.getInst(titleInput).value = ev.title || "";
+        mobiscroll.getInst(locationInput).value = ev.location || "";
+        mobiscroll.getInst(billInput).value = ev.cost || "";
+        mobiscroll.getInst(notesTextarea).value = ev.notes || "";
+        range.setVal([ev.start, ev.end]);
+        setCheckboxes(ev.resource);
+
+        // set anchor for the popup
+        popup.setOptions({ anchor: args.domEvent.currentTarget });
+        popup.open();
+      }
+
+      calendar = mobiscroll.eventcalendar("#demo-work-order-scheduling", {
+        clickToCreate: true,
+        dragToCreate: true,
+        dragToMove: true,
+        dragToResize: true,
+        dragTimeStep: 30,
+        view: {
+          timeline: {
+            type: "week",
+            startDay: 1,
+            endDay: 5,
+          },
+        },
+
+        // Hard-coded data
+        data: [
+          {
+            start: "2023-01-26T06:00",
+            end: "2023-01-26T14:00",
+            title: "Anna", //first name
+            location: "Duncan", //last name
+            resource: ["mon", "wed"],
+            color: "#12ca6c",
+            cost: "Workshop", //workshop
+          },
+          {
+            start: "2023-01-27T08:00",
+            end: "2023-01-27T18:00",
+            title: "Peter",
+            location: "Olsen",
+            resource: ["tue"],
+            color: "#c170c3",
+            cost: "Workshop",
+          },
+          {
+            start: "2023-01-26T12:00",
+            end: "2023-01-26T20:00",
+            title: "Cecilia",
+            location: "Mason",
+            resource: ["wed"],
+            color: "#03c9d2",
+            cost: "Workshop",
+          },
+          {
+            start: "2023-01-26T23:00",
+            end: "2023-01-27T07:00",
+            title: "Stephen",
+            location: "Lewis",
+            resource: ["thu"],
+            color: "#ff1515",
+            cost: "Workshop",
+          },
+          {
+            start: "2023-01-27T10:00",
+            end: "2023-01-27T18:00",
+            title: "Adam",
+            location: "Finch",
+            resource: ["fri"],
+            color: "#12ca6c",
+            cost: "Workshop",
+          },
+          {
+            start: "2023-01-27T08:00",
+            end: "2023-01-27T16:00",
+            title: "Melanie",
+            location: "Nolan",
+            resource: ["sat"],
+            color: "#efd414",
+            cost: "Workshop",
+          },
+          {
+            start: "2023-01-26T09:00",
+            end: "2023-01-26T17:00",
+            title: "Timothy",
+            location: "Connor",
+            resource: ["mon", "wed"],
+            color: "#cf49d8",
+            cost: "Workshop",
+          },
+          {
+            start: "2023-01-27T07:00",
+            end: "2023-01-27T15:00",
+            title: "Timothy",
+            location: "Connor",
+            resource: ["thu", "mon", "sat"],
+            color: "#c170c3",
+            cost: "Workshop",
+          },
+          {
+            start: "2023-01-28T10:00",
+            end: "2023-01-28T18:00",
+            title: "Pam",
+            location: "Ayden",
+            resource: ["fri", "sat", "tue"],
+            color: "#ff1515",
+            cost: "Workshop",
+          },
+          {
+            start: "2023-01-29T11:00",
+            end: "2023-01-29T19:00",
+            title: "Rocky",
+            location: "Sanders",
+            resource: ["wed", "mon", "sat", "thu"],
+            color: "#ff1515",
+            cost: "Workshop",
+          },
+        ],
+        resources: myResources,
+        extendDefaultEvent: function () {
+          return {
+            title: "",
+            location: "",
+            cost: "",
+          };
+        },
+        onEventClick: function (args) {
+          oldEvent = { ...args.event };
+          tempEvent = args.event;
+
+          if (!popup.isVisible()) {
+            createEditPopup(args);
+          }
+        },
+        onEventCreated: function (args) {
+          popup.close();
+          // store temporary event
+          tempEvent = args.event;
+          createAddPopup(args.target);
+        },
+        onEventDeleted: function (args) {
+          mobiscroll.snackbar({
+            button: {
+              action: function () {
+                calendar.addEvent(args.event);
+              },
+              text: "Undo",
+            },
+            message: "Shift deleted",
+          });
+        },
+        renderDay: function (args) {
+          var formatDate = mobiscroll.util.datetime.formatDate;
+          var events = args.events;
+
+          return (
+            "<div>" +
+            "Week start: " +
+            formatDate("DD MMM", args.date) +
+            "</div>"
+          );
+        },
+      });
+
+      popup = mobiscroll.popup("#demo-work-order-popup", {
+        display: "bottom",
+        contentPadding: false,
+        fullScreen: true,
+        scrollLock: false,
+        onClose: function () {
+          if (deleteEvent) {
+            calendar.removeEvent(tempEvent);
+          } else if (restoreEvent) {
+            calendar.updateEvent(oldEvent);
+          }
+        },
+        responsive: {
+          medium: {
+            display: "anchored",
+            width: 520,
+            fullScreen: false,
+            touchUi: false,
+          },
+        },
+      });
+
+      titleInput.addEventListener("input", function (ev) {
+        // update current event's title
+        tempEvent.title = ev.target.value;
+      });
+
+      locationInput.addEventListener("input", function (ev) {
+        // update current event's location
+        tempEvent.location = ev.target.value;
+      });
+
+      billInput.addEventListener("input", function (ev) {
+        tempEvent.cost = +ev.target.value;
+      });
+
+      notesTextarea.addEventListener("change", function (ev) {
+        // update current event's description
+        tempEvent.notes = ev.target.value;
+      });
+
+      range = mobiscroll.datepicker("#work-order-date", {
+        controls: ["time"],
+        select: "range",
+        startInput: "#work-order-start",
+        endInput: "#work-order-end",
+        showRangeLabels: false,
+        touchUi: false,
+        stepMinute: 30,
+        minTime: "06:00",
+        maxTime: "22:00",
+        onChange: function (args) {
+          var date = args.value;
+          // update event's start date
+          tempEvent.start = date[0];
+          tempEvent.end = date[1];
+        },
+      });
+
+      document
+        .querySelectorAll("input[name=event-status]")
+        .forEach(function (elm) {
+          elm.addEventListener("change", function () {
+            // update current event's free property
+            tempEvent.free = mobiscroll.getInst(freeSegmented).checked;
+          });
+        });
+
+      deleteButton.addEventListener("click", function () {
+        // delete current event on button click
+        calendar.removeEvent(tempEvent);
+        popup.close();
+
+        // save a local reference to the deleted event
+        var deletedEvent = tempEvent;
+
+        mobiscroll.snackbar({
+          button: {
+            action: function () {
+              calendar.addEvent(deletedEvent);
+            },
+            text: "Undo",
+          },
+          message: "Shift deleted",
+        });
+      });
+
+      function setCheckboxes(resources) {
+        var checkboxes = document.getElementsByClassName("work-order-checkbox");
+        for (var i = 0; i < checkboxes.length; i++) {
+          var checkbox = checkboxes[i];
+          mobiscroll.getInst(checkbox).checked =
+            resources.indexOf(checkbox.getAttribute("data-value")) !== -1;
+        }
+      }
+    </script>
+  </body>
+</html>
